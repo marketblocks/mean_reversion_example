@@ -10,7 +10,7 @@ add_subdirectory ("marketblocks")
 
 enable_testing()
 
-add_executable (mean_reversion_example "main.cpp")
+add_executable (mean_reversion_example "main.cpp" "strategy.h" "strategy.cpp")
 
 target_link_libraries(mean_reversion_example marketblocks_lib)
 target_include_directories(mean_reversion_example PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/marketblocks/src)
