@@ -1,0 +1,3 @@
+[submodule "marketblocks"]
+	path = marketblocks
+	url = https://github.com/marketblocks/marketblocks

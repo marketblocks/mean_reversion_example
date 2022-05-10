@@ -6,8 +6,7 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("mean_reversion_example")
 
-# Include sub-projects.
-#add_subdirectory ("marketblocks")
+add_subdirectory ("marketblocks")
 
 enable_testing()
 
