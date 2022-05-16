@@ -1,11 +1,11 @@
 ﻿#include "runner/runner.h"
 #include "logging/logger.h"
-#include "strategy.h"
+#include "mean_reversion.h"
 
 int main()
 {
 	// Create runner for strategy
-	mb::runner<strategy> runner = mb::create_runner<strategy>();
+	mb::runner<mean_reversion> runner = mb::create_runner<mean_reversion>();
 
 	try
 	{
