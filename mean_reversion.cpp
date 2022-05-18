@@ -60,7 +60,7 @@ void mean_reversion::run_iteration()
 			{
 				if (price >= mean)
 				{
-					meanReversionItem.exchange()->add_order(mb::trade_description{ mb::order_type::MARKET, pair, mb::trade_action::SELL, price, 1.0 });
+					meanReversionItem.exchange()->add_order(mb::trade_description{ mb::order_type::MARKET, pair, mb::trade_action::SELL, price, 0.01 });
 					meanReversionItem.set_open_position(pair, false);
 				}
 			}
@@ -68,7 +68,7 @@ void mean_reversion::run_iteration()
 			{
 				if (price <= mean * 0.97)
 				{
-					meanReversionItem.exchange()->add_order(mb::trade_description{ mb::order_type::MARKET, pair, mb::trade_action::BUY, price, 1.0 });
+					meanReversionItem.exchange()->add_order(mb::trade_description{ mb::order_type::MARKET, pair, mb::trade_action::BUY, price, 0.01 });
 					meanReversionItem.set_open_position(pair, true);
 				}
 			}

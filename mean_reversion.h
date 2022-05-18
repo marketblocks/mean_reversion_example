@@ -28,8 +28,7 @@ class mean_reversion
 {
 private:
 	std::vector<mean_reversion_data> _meanReversionData;
-	//int _
-
+	
 public:
 	void initialise(std::vector<std::shared_ptr<mb::exchange>> exchanges);
 	void run_iteration();
