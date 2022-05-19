@@ -1,13 +1,8 @@
 #include "mean_reversion.h"
 #include "common/utils/containerutils.h"
+#include "common/utils/financeutils.h"
 
-mean_reversion_data::mean_reversion_data(std::shared_ptr<mb::exchange> exchange)
-	: _exchange{ exchange }
-{
-	_tradablePairs = _exchange->get_tradable_pairs();
-}
-
-double mean_reversion_data::get_current_mean(const mb::tradable_pair& pair)
+double mean_reversion_data::get_current_mean(const mb::tradable_pair& pair) const
 {
 	auto it = _averagePrices.find(pair);
 	if (it != _averagePrices.end())
@@ -23,57 +18,77 @@ void mean_reversion_data::update_mean(const mb::tradable_pair& pair, double pric
 	_averagePrices[pair].add_value(price);
 }
 
-void mean_reversion_data::set_open_position(const mb::tradable_pair& pair, bool open)
+void mean_reversion_data::set_open_position(const mb::tradable_pair& pair, mb::trade_description trade)
 {
-	_openPositions[pair] = open;
+	_openPositions.emplace(pair, std::move(trade));
 }
 
-bool mean_reversion_data::has_open_position(const mb::tradable_pair& pair)
+bool mean_reversion_data::has_open_position(const mb::tradable_pair& pair) const
 {
-	auto it = _openPositions.find(pair);
-	if (it != _openPositions.end())
-	{
-		return it->second;
-	}
-
-	return false;
+	return _openPositions.contains(pair);
 }
+
+const mb::trade_description& mean_reversion_data::get_open_trade_description(const mb::tradable_pair& pair) const
+{
+	return _openPositions.at(pair);
+}
+
+void mean_reversion_data::close_position(const mb::tradable_pair& pair)
+{
+	_openPositions.erase(pair);
+}
+
+mean_reversion::mean_reversion(mean_reversion_config config)
+	: _exchanges{}, _meanReversionData{}, _config{ std::move(config) }
+{}
 
 void mean_reversion::initialise(std::vector<std::shared_ptr<mb::exchange>> exchanges)
 {
-	_meanReversionData = to_vector<mean_reversion_data>(exchanges, [](std::shared_ptr<mb::exchange> exchange)
-		{
-			return mean_reversion_data{ exchange };
-		});
+	_exchanges = std::move(exchanges);
+
+	_meanReversionData.reserve(_exchanges.size());
+
+	for (auto exchange : _exchanges)
+	{
+		_meanReversionData.emplace(exchange->id(), mean_reversion_data{});
+	}
 }
 
 void mean_reversion::run_iteration()
 {
-	for (auto& meanReversionItem : _meanReversionData)
+	for (auto exchange : _exchanges)
 	{
-		for (auto& pair : meanReversionItem.tradable_pairs())
-		{
-			double mean = meanReversionItem.get_current_mean(pair);
-			double price = meanReversionItem.exchange()->get_price(pair);
+		mean_reversion_data& meanReversionData = _meanReversionData.find(exchange->id())->second;
 
-			if (meanReversionItem.has_open_position(pair))
+		for (auto& pair : _config.tradable_pairs())
+		{
+			double price = exchange->get_price(pair);
+			double mean = meanReversionData.get_current_mean(pair);
+
+			if (meanReversionData.has_open_position(pair))
 			{
-				if (price >= mean)
+				const mb::trade_description& openPosition = meanReversionData.get_open_trade_description(pair);
+
+				if (price >= mean && price > openPosition.asset_price())
 				{
-					meanReversionItem.exchange()->add_order(mb::trade_description{ mb::order_type::MARKET, pair, mb::trade_action::SELL, price, 0.01 });
-					meanReversionItem.set_open_position(pair, false);
+					mb::trade_description trade{ mb::order_type::MARKET, pair, mb::trade_action::SELL, price, openPosition.volume() };
+					exchange->add_order(trade);
+					meanReversionData.close_position(pair);
 				}
 			}
 			else
 			{
-				if (price <= mean * 0.97)
+				if (price <= mean * _config.trade_price_threshold())
 				{
-					meanReversionItem.exchange()->add_order(mb::trade_description{ mb::order_type::MARKET, pair, mb::trade_action::BUY, price, 0.01 });
-					meanReversionItem.set_open_position(pair, true);
+					double availableBalance = mb::find_or_default(exchange->get_balances(), pair.price_unit(), 0.0);
+					double volume = mb::calculate_volume(price, availableBalance * _config.balance_traded());
+					mb::trade_description trade{ mb::order_type::MARKET, pair, mb::trade_action::BUY, price, volume };
+					exchange->add_order(trade);
+					meanReversionData.set_open_position(pair, std::move(trade));
 				}
 			}
 
-			meanReversionItem.update_mean(pair, price);
+			meanReversionData.update_mean(pair, price);
 		}
 	}
 }
