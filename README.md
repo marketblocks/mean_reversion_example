@@ -1,10 +1,8 @@
 # Mean Reversion Example
 
-In this example:
-  1. All possible triangular sequences are determined from the available trading pairs for each exchange.
-  2. A websocket connection is opened and order book updates are listened to in real-time, allowing us to act on small price fluctuations that may only last fractions of a      second. This is a critical component of most high frequency trading systems.
-  3. When an order book change is detected, the triangular sequences containing the updated asset pair are analyzed to look for triangular arbitrage opportunities.
-  4. Trades are executed to take advantage of these opportunities if they are calculated as profitable.
+This example features a very basic strategy that is used to demonstrate the back testing framework of marketblocks. It also features a custom config file and illustrates how they are easily and effortlessly integrated into the pipeline. 
+
+Also note how the strategy is written completely independently from any back testing logic. This allows the strategy to go live just by changing the run mode variable in the runner.json config file (see more below).
 
 ### Reading the Code
 The core algorithm is contained within `mean_reversion.cpp`. 
