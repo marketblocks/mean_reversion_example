@@ -34,7 +34,7 @@ The default run mode is back_test. This will run the strategy against historical
 As well as printing the contents of report.txt to the console window.
 
 
-![image](https://user-images.githubusercontent.com/43093246/169858003-4f784be7-53e3-41af-88aa-620a69d1568f.png)
+![image](https://user-images.githubusercontent.com/43093246/169858562-38b3065e-de1a-4d6d-808c-1c1d4326b64b.png)
 
 
 Various parameters may be adjusted through the config files located inside the `configs` folder. All config files are JSON encoded.
