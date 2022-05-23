@@ -39,6 +39,23 @@ As well as printing the contents of report.txt to the console window.
 
 Various parameters may be adjusted through the config files located inside the `configs` folder. All config files are JSON encoded.
 
+<details><summary>mean_reversion.json - Custom config specific to this example</summary>
+  
+- `balanceTraded` - Specifies percentage of balance to use when executing trades (a value of 1.0 uses the entire available balance)
+- `tradablePairs` - Specifies the pairs to run the asset against (Note: if running back test, additional data must be supplied to change this setting from "BTC/USD")
+- `tradePriceThreshold` - Specifies how far below the mean the price must fall to trigger a trade
+  
+</details>
+
+<details><summary>back_testing.json</summary>
+  
+- `dataDirectory` - Path to historical data
+- `outputDirectory` - Path to save results
+- `startTime` - Data start time specified as seconds from epoch
+- `stepSize` - Data interval in seconds
+  
+</details>
+
 <details><summary>runner.json</summary>
 
 - `exchangeIds` - Specifies which exchanges to run the strategy on. Specifying an empty array will use all supported exchanges.
@@ -47,6 +64,7 @@ Various parameters may be adjusted through the config files located inside the `
 - `websocketTimeout` - Specifies the timeout for the websocket connection handshake in ms. A value of 0 disables the timeout.
   
 </details>
+
 <details><summary>paper_trading.json</summary>
   
 Contains parameters used by the trading simulator when the Live-Test run mode is enabled
