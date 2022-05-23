@@ -17,7 +17,7 @@ public:
 	void set_open_position(const mb::tradable_pair& pair, mb::trade_description trade);
 	bool has_open_position(const mb::tradable_pair& pair) const;
 	const mb::trade_description& get_open_trade_description(const mb::tradable_pair& pair) const;
-	void close_position(const mb::tradable_pair& pair);
+	void set_close_position(const mb::tradable_pair& pair);
 };
 
 class mean_reversion

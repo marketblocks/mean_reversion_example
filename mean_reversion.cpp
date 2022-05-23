@@ -33,7 +33,7 @@ const mb::trade_description& mean_reversion_data::get_open_trade_description(con
 	return _openPositions.at(pair);
 }
 
-void mean_reversion_data::close_position(const mb::tradable_pair& pair)
+void mean_reversion_data::set_close_position(const mb::tradable_pair& pair)
 {
 	_openPositions.erase(pair);
 }
@@ -73,7 +73,7 @@ void mean_reversion::run_iteration()
 				{
 					mb::trade_description trade{ mb::order_type::MARKET, pair, mb::trade_action::SELL, price, openPosition.volume() };
 					exchange->add_order(trade);
-					meanReversionData.close_position(pair);
+					meanReversionData.set_close_position(pair);
 				}
 			}
 			else
