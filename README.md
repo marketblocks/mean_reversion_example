@@ -50,7 +50,9 @@ Various parameters may be adjusted through the config files located inside the `
 - `dataDirectory` - Path to historical data
 - `outputDirectory` - Path to save results
 - `startTime` - Data start time specified as seconds from epoch
+- `endTime` - Data end time specified as seconds from epoch
 - `stepSize` - Data interval in seconds
+- `dynamicDataLoading` - Flag to indicate whether to dynamically load historical data
   
 </details>
 
